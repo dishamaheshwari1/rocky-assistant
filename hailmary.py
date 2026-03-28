@@ -8,6 +8,7 @@ import json
 SAVE_FILE = "tasks.json"
 
 def clear_screen():
+    """Clears the terminal screen based on the OS."""
     os.system('cls' if os.name == 'nt' else 'clear')
 
 def load_tasks():
@@ -33,71 +34,136 @@ def clear_save():
         os.remove(SAVE_FILE)
 
 def print_doodle():
-    """Prints a random space-themed ASCII doodle with random padding."""
+    """Prints a random space-themed ASCII doodle with dynamic padding."""
     doodles = [
+        # Constellation/Satellite
         r"""
-  ^
- / \
-|   |
-/_-_\
+ @  * .  . * * .        .        .   * ..
+ @. /\ * ###     .      .        .            *
+ @ /  \  * #####   .     * * * .
+ ]/ [] \  ######### * .  * .  //    .  * .
+ / [][] \###\#|#/###   ..    * .  //  * .  ..  *
+ |  __  | ###\|/###  * * ___o |==// .      * *
+ |  |!  |  # }|{  #        /\  \/  //|\
+ |  ||  |    }|{           / /        | \
+                           ` `        '  '
         """,
+        # Abstract Satellite/Orbit
         r"""
-  _._
- =( _ )=
+   .       .
+ +  :      .
+       :       _
+   .   !   '  (_)
+      ,|.'
+-  -- ---(-O-`--- --  -
+      ,`|'`.
+    ,   !    .
+       :       :  "
+       .     --+--
+ .:        .       !
         """,
+        # Standard Vertical Rocket
         r"""
-  .--.
- ( o  )
-  '--'
+                 ^
+                / \
+               /   \
+              /     \
+             |       |
+             |  (o)  |
+             |       |
+            /|       |\
+           / |       | \
+          /  |_______|  \
+         /___/ \___/ \___\
+               |   |
+              /|   |\
+             ===   ===
         """,
+        # Landscape/Sky
         r"""
-   ___
- _/(o)\_
- ~~~~~~~
+                .                                              .
+     * .                  .              .        .   * .
+  .         .                    .       .           .      .        .
+        o                            .                   .
+         .              .                  .           .
+         0     .
+              .          .                ,                ,    ,
+ .          \          .                        .
+      .      \   ,
+   .          o     .                .                   .            .
+     .         \                 ,             .                .
+            #\##\#      .                            .        .
+          #  #O##\###                .                        .
+   .        #*#  #\##\###                      .                     ,
+        .   ##*#  #\##\##              .                    .
+      .      ##*#  #o##\#         .                            ,       .
+          .     *#  #\#     .                    .             .          ,
+                      \          .                         .
+____^/\___^--____/\____O______________/\/\---/\___________---______________
+   /\^   ^  ^    ^                  ^^ ^  '\ ^          ^       ---
+         --           -            --  -      -         ---  __       ^
+   --  __                      ___--  ^  ^                        --  __
         """,
+        # Ringed Planet
         r"""
-  _..._
- | [__] |
- \______/
+                       * .                 .
+           .                        *
+                   _..._     .                  *
+                 .'     '.             .
+            ..._ |       | _...
+          .'    '-.     .-'    '.       .
+           '--..._ '...' _...--'
+       * '-...-'        .
+                            * .
         """,
+        # UFO / Saucer
         r"""
- \#\ | /#/
- \#\_|_/#/
-    / \
+                .       * .                 .
+            .       _.-" "-._         .
+               _.-"           "-._             *
+         .   (_____________________)   *
+              \__                 __/        .
+                 "---.........---"
+            * / | | | \        .
+                    /  | | |  \              .
+                   /   | | |   \
         """,
+        # Restored High-Fidelity Black Hole
         r"""
-  ___.
- (  _ \_
-  \_.-'
-        """,
-        r"""
-   ,/
- /'/___
- |/   |
-        """,
-        r"""
-  /   \
- | o o |
-  \ - /
-        """,
-        r"""
-  * .
-   \ /
-  . * .
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⠀⢤⠠⡔⣰⢂⡲⣄⠢⢄⠠⢀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠌⠰⡇⢾⣬⣷⣽⣧⣿⣵⣾⠽⡎⡶⠡⠌⠄⠂⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣤⠲⣢⢹⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⠡⢘⣥⣻⢬⢻⣿⣿⣿⣿⣿⣿⣤⢿⣱⢷⢔⡀⠂⠄⠀⠀⠀⠀⠀⠀⠀⡈⡌⣰⣸⠘⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠡⢂⡔⣧⣮⡾⣺⣗⣯⡿⠿⠿⠿⠾⣯⡽⣻⣭⡫⡻⣭⡘⠄⡀⠀⠀⠀⠀⠀⠁⠤⠍⠁⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠌⡐⢡⢊⢮⣾⣻⣪⡮⠊⠁⠀⠀⠀⠀⠀⠀⠈⢓⡷⡙⣮⡪⡻⡰⣀⠔⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡈⢀⠐⢂⣏⢻⣏⠓⡏⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⢋⡟⣿⣾⣿⣇⡟⣉⣿⡖⢳⣾⣰⣶⣀⣀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⠐⡠⢐⡼⣮⢯⣝⠟⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢈⣾⣽⣿⣿⣿⣿⣿⣾⣯⢿⣿⣷⡯⠛⠤⠁⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣂⡡⢚⣯⣯⣿⣾⡧⠀⠆⠀⠀⠀⠀⠀⠀⢀⣀⣠⣠⣤⣾⣿⣿⣿⣿⣿⣿⣿⠿⡟⠟⠩⠁⠂⠁⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⣠⣴⣾⣿⣿⣿⣿⣿⣿⣿⣿⣤⣧⣤⣤⣴⣶⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢻⠟⢫⠙⠠⠁⠸⠄⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠄⣠⣤⣿⣿⣧⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠿⣏⡉⡿⡈⠈⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⢤⡚⡽⢿⢿⡿⣿⢿⡿⠿⠿⠿⠻⠯⠿⣿⣿⣯⣻⣿⠽⠟⠟⠛⠻⢛⡩⣵⡟⡢⣟⠏⠠⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠁⠀⠂⠐⠀⠂⠀⠁⠈⠀⠁⠀⠂⠘⠫⣓⡷⡇⣿⣯⣴⣬⣿⡗⣟⣾⡿⡡⢊⠐⢀⠄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠑⠳⡝⣷⢾⢧⡷⣿⣿⠿⠉⡈⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠂⠠⠀⠃⡜⢚⠓⠃⠀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
         """
     ]
 
     doodle = random.choice(doodles).strip('\n')
-    # random left padding (0 to 40 to avoid wrapping on an 80-char terminal)
-    padding = " " * random.randint(0, 40)
+    lines = doodle.split('\n')
+
+    # Calculate the max width of the artwork to prevent terminal line wrapping
+    max_width = max(len(line) for line in lines)
+    max_padding = max(0, 79 - max_width)
+
+    # Random left padding based on available space
+    padding = " " * random.randint(0, max_padding)
 
     print("\n")
-    for line in doodle.split('\n'):
+    for line in lines:
         print(padding + line)
     print("\n")
 
 def clean_task_input(text):
-    # strips leading numbers, dots, dashes, and parentheses so the program can cleanly add its own
+    """Strips leading numbers, dots, dashes, and parentheses."""
     return re.sub(r'^\d+[\.\-\)]*\s*', '', text).strip()
 
 def main():
@@ -111,12 +177,13 @@ def main():
         print("i remember your tasks from before! we keep working.")
         time.sleep(1.5)
     else:
-        print("make list of tasks. use exclamation marks for priority, like 'build xenonite!!!'.")
+        print("make list of tasks. use exclamation marks for priority, like 'build xenonite!!!'")
         tasks = {}
         task_id = 1
 
         while True:
-            raw_t = input("what is new task, question? or type 'done' to start working.").strip()
+            # Added space at the end of the prompt
+            raw_t = input("what is new task, question? or type 'done' to start working. ").strip()
             if raw_t.lower() == 'done':
                 break
             if not raw_t:
@@ -226,7 +293,6 @@ def main():
     ]
 
     while True:
-        # Check if all tasks are complete
         if tasks and all(t['done'] for t in tasks.values()):
             print(f"\n{random.choice(praises)}")
             time.sleep(1.5)
@@ -237,10 +303,10 @@ def main():
                     print("          amaze! amaze! amaze!")
                     print(frame)
                     time.sleep(0.25)
-            clear_save() # Everything is done, clear the save
+            clear_save()
             break
 
-        cmd = input("\nwhat do you want to do, question? type 'break', 'add', 'list', 'done', 'quit', 'clear', or task number.").strip().lower()
+        cmd = input("\nwhat do you want to do, question? type 'break', 'add', 'list', 'done', 'quit', 'clear', or task number. ").strip().lower()
 
         if cmd == 'done':
             urgent_left = [t for t in tasks.values() if t['points'] >= 3 and not t['done']]
@@ -263,7 +329,7 @@ def main():
                         print("          amaze! amaze! amaze!")
                         print(frame)
                         time.sleep(0.25)
-                clear_save() # Cleared all urgent items, clear the save
+                clear_save()
                 break
 
         elif cmd == 'quit':
@@ -285,7 +351,7 @@ def main():
             has_pending = False
             for tid, t in tasks.items():
                 if not t['done']:
-                    print(f"  {tid}. {t['text']}") # Removed the points display here!
+                    print(f"  {tid}. {t['text']}")
                     has_pending = True
 
             if has_pending:
@@ -295,7 +361,7 @@ def main():
                     if not tasks[tid]['done']:
                         tasks[tid]['done'] = True
                         session_points += tasks[tid]['points']
-                        save_tasks(tasks) # Save state after completing a task
+                        save_tasks(tasks)
                         print("good! fist my bump!")
 
                         if "sleep" in tasks[tid]['text']:
@@ -335,7 +401,7 @@ def main():
                     points = 1
                 tasks[task_id] = {'text': t.lower(), 'points': points, 'done': False}
                 task_id += 1
-                save_tasks(tasks) # Save state after adding a task
+                save_tasks(tasks)
                 print("task added.")
             last_interaction_time = time.time()
             print_doodle()
@@ -343,8 +409,8 @@ def main():
         elif cmd == 'list':
             print("current tasks:")
             for tid, t in tasks.items():
-                status = "done" if t['done'] else "pending"
-                print(f"  {tid}. {t['text']} [{status}]")
+                status = " [done]" if t['done'] else ""
+                print(f"  {tid}. {t['text']}{status}")
             last_interaction_time = time.time()
             print_doodle()
 
@@ -353,7 +419,7 @@ def main():
             if not tasks[tid]['done']:
                 tasks[tid]['done'] = True
                 session_points += tasks[tid]['points']
-                save_tasks(tasks) # Save state after completing a task
+                save_tasks(tasks)
                 print(f"task {tid} marked done. good job. jazz hands!")
 
                 if "sleep" in tasks[tid]['text']:
