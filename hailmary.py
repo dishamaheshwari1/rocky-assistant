@@ -5,7 +5,7 @@ import sys
 import re
 import json
 
-SAVE_FILE = "rocky_tasks.json"
+SAVE_FILE = "tasks.json"
 
 def clear_screen():
     os.system('cls' if os.name == 'nt' else 'clear')
@@ -102,7 +102,7 @@ def clean_task_input(text):
 
 def main():
     clear_screen()
-    print("i am rocky. you are grace. we fix stars now.")
+    print("i am rocky. we fix stars now.")
 
     tasks = load_tasks()
 
@@ -116,7 +116,7 @@ def main():
         task_id = 1
 
         while True:
-            raw_t = input("what is new task (or type 'done' to start working), question? ").strip()
+            raw_t = input("what is new task, question? or type 'done' to start working.").strip()
             if raw_t.lower() == 'done':
                 break
             if not raw_t:
@@ -137,24 +137,24 @@ def main():
     session_points = 0
     last_interaction_time = time.time()
 
-    print("\ngood. list is made. we work now. math is math!")
+    print("\ngood. list is made. we work now.")
 
     praises = [
-        "you not just dumb human after all.",
-        "you the smartest human i know. (only human i know, but still).",
+        "you not just dumb human after all!",
+        "you the smartest human i know. only human i know, but still.",
         "amaze! you save earth today.",
         "you are good at task-doing. like me.",
         "fist my bump! we are heroes.",
         "you do not sleep much. good.",
         "you work fast. radiation not cook your brain yet.",
         "good job. i give you a xenonite star.",
-        "you are scary space monster who does all the tasks.",
-        "we survive! you and me, grace!",
+        "you are almost as smart as an eridian. good job.",
+        "we survive!",
         "you make good decisions. mostly.",
         "earth will not freeze. probably.",
         "amaze! amaze! amaze!",
         "you work hard. you earn your leaky space food.",
-        "you are good friend, grace."
+        "you are good scientist."
     ]
 
     frames = [
@@ -240,7 +240,7 @@ def main():
             clear_save() # Everything is done, clear the save
             break
 
-        cmd = input("\nwhat do you want to do (type 'break', 'add', 'list', 'done', 'quit', 'clear', or task number), question? ").strip().lower()
+        cmd = input("\nwhat do you want to do, question? type 'break', 'add', 'list', 'done', 'quit', 'clear', or task number.").strip().lower()
 
         if cmd == 'done':
             urgent_left = [t for t in tasks.values() if t['points'] >= 3 and not t['done']]
@@ -254,7 +254,7 @@ def main():
                 last_interaction_time = time.time()
                 print_doodle()
             else:
-                print(f"\nyou finish early? okay. {random.choice(praises)}")
+                print(f"\nyou finish early, question? okay. {random.choice(praises)}")
                 time.sleep(1.5)
                 for _ in range(4):
                     for frame in frames:
@@ -267,11 +267,11 @@ def main():
                 break
 
         elif cmd == 'quit':
-            print("\nyou quit? you give up on earth? sad. goodbye.")
+            print("\nyou quit, question? you give up on earth, question? rocky is sad. goodbye.")
             sys.exit()
 
         elif cmd == 'clear':
-            print("\nyou want to forget everything? okay. memory wiped.")
+            print("\nyou want to forget everything, question? okay. memory wiped.")
             tasks = {}
             task_id = 1
             clear_save()
@@ -289,7 +289,7 @@ def main():
                     has_pending = True
 
             if has_pending:
-                ans = input("you finish a task? enter number or 'none', question? ").strip().lower()
+                ans = input("you finish a task, question? enter number or 'none'. ").strip().lower()
                 if ans.isdigit() and int(ans) in tasks:
                     tid = int(ans)
                     if not tasks[tid]['done']:
@@ -303,18 +303,18 @@ def main():
                         if "taumoeba" in tasks[tid]['text']:
                             print("taumoeba! bad bad bad!")
                         if "eat" in tasks[tid]['text'] or "food" in tasks[tid]['text']:
-                            print("rocky will go eat too.")
+                            print("rocky will eat too.")
                         if "math" in tasks[tid]['text']:
                             print("math is math!")
                     else:
-                        print("you already did that one. silly grace.")
+                        print("you already did that one. silly human.")
             else:
                 print("no tasks left!")
 
             mins_worked = int(elapsed // 60)
             if session_points >= 5 or elapsed >= 25 * 60:
                 print(f"break approved! session points: {session_points}, solid work time: {mins_worked} mins.")
-                input("take break. press enter when awake, question? ")
+                input("take break. press enter when awake. ")
                 session_points = 0
                 last_interaction_time = time.time()
                 print("timer and points reset. back to work!")
@@ -336,7 +336,7 @@ def main():
                 tasks[task_id] = {'text': t.lower(), 'points': points, 'done': False}
                 task_id += 1
                 save_tasks(tasks) # Save state after adding a task
-                print("task added. i make it out of xenonite.")
+                print("task added.")
             last_interaction_time = time.time()
             print_doodle()
 
@@ -361,7 +361,7 @@ def main():
                 if "taumoeba" in tasks[tid]['text']:
                     print("taumoeba! bad bad bad!")
                 if "eat" in tasks[tid]['text'] or "food" in tasks[tid]['text']:
-                    print("rocky will go eat too.")
+                    print("rocky will eat too.")
                 if "math" in tasks[tid]['text']:
                     print("math is math!")
             else:
@@ -370,7 +370,7 @@ def main():
             print_doodle()
 
         else:
-            print("i do not understand. try 'break', 'add', 'list', 'done', 'quit', 'clear', or a task number.")
+            print("rocky does not understand. try 'break', 'add', 'list', 'done', 'quit', 'clear', or a task number.")
             last_interaction_time = time.time()
             print_doodle()
 
