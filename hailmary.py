@@ -3,9 +3,34 @@ import os
 import random
 import sys
 import re
+import json
+
+SAVE_FILE = "rocky_tasks.json"
 
 def clear_screen():
     os.system('cls' if os.name == 'nt' else 'clear')
+
+def load_tasks():
+    """Loads tasks from a JSON file if it exists."""
+    if os.path.exists(SAVE_FILE):
+        try:
+            with open(SAVE_FILE, 'r') as f:
+                data = json.load(f)
+                # JSON keys are always strings, so we convert them back to integers
+                return {int(k): v for k, v in data.items()}
+        except:
+            return {}
+    return {}
+
+def save_tasks(tasks):
+    """Saves the current tasks to a JSON file."""
+    with open(SAVE_FILE, 'w') as f:
+        json.dump(tasks, f)
+
+def clear_save():
+    """Deletes the save file when tasks are cleared or completed."""
+    if os.path.exists(SAVE_FILE):
+        os.remove(SAVE_FILE)
 
 def print_doodle():
     """Prints a random space-themed ASCII doodle with random padding."""
@@ -78,27 +103,36 @@ def clean_task_input(text):
 def main():
     clear_screen()
     print("i am rocky. you are grace. we fix stars now.")
-    print("make list of tasks. use exclamation marks for priority, like 'build xenonite!!!'.")
 
-    tasks = {}
-    task_id = 1
+    tasks = load_tasks()
 
-    while True:
-        raw_t = input("what is new task (or type 'done' to start working), question? ").strip()
-        if raw_t.lower() == 'done':
-            break
-        if not raw_t:
-            continue
+    if tasks:
+        task_id = max(tasks.keys()) + 1
+        print("i remember your tasks from before! we keep working.")
+        time.sleep(1.5)
+    else:
+        print("make list of tasks. use exclamation marks for priority, like 'build xenonite!!!'.")
+        tasks = {}
+        task_id = 1
 
-        t = clean_task_input(raw_t)
+        while True:
+            raw_t = input("what is new task (or type 'done' to start working), question? ").strip()
+            if raw_t.lower() == 'done':
+                break
+            if not raw_t:
+                continue
 
-        points = t.count('!')
-        if points == 0:
-            t = t + '!'
-            points = 1
+            t = clean_task_input(raw_t)
 
-        tasks[task_id] = {'text': t.lower(), 'points': points, 'done': False}
-        task_id += 1
+            points = t.count('!')
+            if points == 0:
+                t = t + '!'
+                points = 1
+
+            tasks[task_id] = {'text': t.lower(), 'points': points, 'done': False}
+            task_id += 1
+
+        save_tasks(tasks)
 
     session_points = 0
     last_interaction_time = time.time()
@@ -192,6 +226,7 @@ def main():
     ]
 
     while True:
+        # Check if all tasks are complete
         if tasks and all(t['done'] for t in tasks.values()):
             print(f"\n{random.choice(praises)}")
             time.sleep(1.5)
@@ -202,9 +237,10 @@ def main():
                     print("          amaze! amaze! amaze!")
                     print(frame)
                     time.sleep(0.25)
+            clear_save() # Everything is done, clear the save
             break
 
-        cmd = input("\nwhat do you want to do (type 'break?', 'add', 'list', 'done', 'force quit', or task number), question? ").strip().lower()
+        cmd = input("\nwhat do you want to do (type 'break', 'add', 'list', 'done', 'quit', 'clear', or task number), question? ").strip().lower()
 
         if cmd == 'done':
             urgent_left = [t for t in tasks.values() if t['points'] >= 3 and not t['done']]
@@ -227,11 +263,20 @@ def main():
                         print("          amaze! amaze! amaze!")
                         print(frame)
                         time.sleep(0.25)
+                clear_save() # Cleared all urgent items, clear the save
                 break
 
-        elif cmd == 'force quit':
-            print("\nyou force quit? you give up on earth? sad. goodbye.")
+        elif cmd == 'quit':
+            print("\nyou quit? you give up on earth? sad. goodbye.")
             sys.exit()
+
+        elif cmd == 'clear':
+            print("\nyou want to forget everything? okay. memory wiped.")
+            tasks = {}
+            task_id = 1
+            clear_save()
+            last_interaction_time = time.time()
+            print_doodle()
 
         elif cmd == 'break':
             elapsed = time.time() - last_interaction_time
@@ -240,7 +285,7 @@ def main():
             has_pending = False
             for tid, t in tasks.items():
                 if not t['done']:
-                    print(f"  {tid}. {t['text']} ({t['points']} points)")
+                    print(f"  {tid}. {t['text']}") # Removed the points display here!
                     has_pending = True
 
             if has_pending:
@@ -250,6 +295,7 @@ def main():
                     if not tasks[tid]['done']:
                         tasks[tid]['done'] = True
                         session_points += tasks[tid]['points']
+                        save_tasks(tasks) # Save state after completing a task
                         print("good! fist my bump!")
 
                         if "sleep" in tasks[tid]['text']:
@@ -289,6 +335,7 @@ def main():
                     points = 1
                 tasks[task_id] = {'text': t.lower(), 'points': points, 'done': False}
                 task_id += 1
+                save_tasks(tasks) # Save state after adding a task
                 print("task added. i make it out of xenonite.")
             last_interaction_time = time.time()
             print_doodle()
@@ -306,6 +353,7 @@ def main():
             if not tasks[tid]['done']:
                 tasks[tid]['done'] = True
                 session_points += tasks[tid]['points']
+                save_tasks(tasks) # Save state after completing a task
                 print(f"task {tid} marked done. good job. jazz hands!")
 
                 if "sleep" in tasks[tid]['text']:
@@ -322,7 +370,7 @@ def main():
             print_doodle()
 
         else:
-            print("i do not understand. try 'break', 'add', 'list', 'done', 'force quit', or a task number.")
+            print("i do not understand. try 'break', 'add', 'list', 'done', 'quit', 'clear', or a task number.")
             last_interaction_time = time.time()
             print_doodle()
 
