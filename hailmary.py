@@ -17,7 +17,6 @@ def load_tasks():
         try:
             with open(SAVE_FILE, 'r') as f:
                 data = json.load(f)
-                # JSON keys are always strings, so we convert them back to integers
                 return {int(k): v for k, v in data.items()}
         except:
             return {}
@@ -150,11 +149,8 @@ ____^/\___^--____/\____O______________/\/\---/\___________---______________
     doodle = random.choice(doodles).strip('\n')
     lines = doodle.split('\n')
 
-    # Calculate the max width of the artwork to prevent terminal line wrapping
     max_width = max(len(line) for line in lines)
     max_padding = max(0, 79 - max_width)
-
-    # Random left padding based on available space
     padding = " " * random.randint(0, max_padding)
 
     print("\n")
@@ -166,6 +162,16 @@ def clean_task_input(text):
     """Strips leading numbers, dots, dashes, and parentheses."""
     return re.sub(r'^\d+[\.\-\)]*\s*', '', text).strip()
 
+def print_task_list(tasks):
+    """Prints the full task list with status indicators."""
+    if not tasks:
+        print("  (no tasks yet)")
+        return
+    for tid, t in tasks.items():
+        status = " [done]" if t['done'] else ""
+        priority = "!" * t['points']
+        print(f"  {tid}. {t['text']} {priority}{status}")
+
 def main():
     clear_screen()
     print("i am rocky. we fix stars now.")
@@ -174,7 +180,11 @@ def main():
 
     if tasks:
         task_id = max(tasks.keys()) + 1
-        print("i remember your tasks from before! we keep working.")
+        print("i remember your tasks from before! here is what we have:")
+        print()
+        print_task_list(tasks)
+        print()
+        print("we keep working.")
         time.sleep(1.5)
     else:
         print("make list of tasks. use exclamation marks for priority, like 'build xenonite!!!'")
@@ -182,7 +192,6 @@ def main():
         task_id = 1
 
         while True:
-            # Added space at the end of the prompt
             raw_t = input("what is new task, question? or type 'done' to start working. ").strip()
             if raw_t.lower() == 'done':
                 break
@@ -202,9 +211,16 @@ def main():
         save_tasks(tasks)
 
     session_points = 0
-    last_interaction_time = time.time()
+    # Tracks the start of the current unbroken work session (resets only on actual taken breaks)
+    session_start_time = time.time()
+    # Counter for throttling doodles: show once every 5 commands
+    command_count = 0
+    # Track which long-work easter eggs have already fired
+    shown_40min_egg = False
+    shown_60min_egg = False
 
     print("\ngood. list is made. we work now.")
+    print("commands: 'break', 'add', 'list', 'delete', 'done', 'quit', 'clear', or task number.")
 
     praises = [
         "you not just dumb human after all!",
@@ -293,6 +309,24 @@ def main():
     ]
 
     while True:
+        # --- Long-work easter eggs (checked every loop, based on session_start_time) ---
+        elapsed_session = time.time() - session_start_time
+        if not shown_40min_egg and elapsed_session >= 40 * 60:
+            shown_40min_egg = True
+            print()
+            print("rocky have words of encouragement.")
+            print("you work long time. rocky is... proud? that is right word, yes?")
+            print("you are good human. earth is lucky to have you.")
+            print("keep going. you are almost there. probably.")
+        if not shown_60min_egg and elapsed_session >= 60 * 60:
+            shown_60min_egg = True
+            print()
+            print("rocky have words of GREAT encouragement.")
+            print("you work one whole hour. that is impressive even for eridian standard.")
+            print("rocky want you to know: you are best human rocky know.")
+            print("(rocky only know one human. but still. you are best.)")
+            print("amaze. amaze. amaze.")
+
         if tasks and all(t['done'] for t in tasks.values()):
             print(f"\n{random.choice(praises)}")
             time.sleep(1.5)
@@ -306,7 +340,8 @@ def main():
             clear_save()
             break
 
-        cmd = input("\nwhat do you want to do, question? type 'break', 'add', 'list', 'done', 'quit', 'clear', or task number. ").strip().lower()
+        cmd = input("\nwhat do you want to do, question? ").strip().lower()
+        command_count += 1
 
         if cmd == 'done':
             urgent_left = [t for t in tasks.values() if t['points'] >= 3 and not t['done']]
@@ -317,8 +352,6 @@ def main():
                 for u in urgent_left:
                     print(f"  {u['text']}")
                 print("keep working, question?")
-                last_interaction_time = time.time()
-                print_doodle()
             else:
                 print(f"\nyou finish early, question? okay. {random.choice(praises)}")
                 time.sleep(1.5)
@@ -341,11 +374,9 @@ def main():
             tasks = {}
             task_id = 1
             clear_save()
-            last_interaction_time = time.time()
-            print_doodle()
 
         elif cmd == 'break':
-            elapsed = time.time() - last_interaction_time
+            elapsed = time.time() - session_start_time
             print("you ask for break, question? let's see what work you have done.")
             print("tasks:")
             has_pending = False
@@ -381,15 +412,15 @@ def main():
             if session_points >= 5 or elapsed >= 25 * 60:
                 print(f"break approved! session points: {session_points}, solid work time: {mins_worked} mins.")
                 input("take break. press enter when awake. ")
+                # Reset only when break is actually taken
                 session_points = 0
-                last_interaction_time = time.time()
+                session_start_time = time.time()
+                shown_40min_egg = False
+                shown_60min_egg = False
                 print("timer and points reset. back to work!")
             else:
                 print(f"sad! denied! you only have {session_points} points and {mins_worked} mins of solid work.")
                 print("need 5 points or 25 mins. keep working! earth is dying!")
-                last_interaction_time = time.time()
-
-            print_doodle()
 
         elif cmd == 'add':
             raw_t = input("what is new task, question? ").strip()
@@ -403,16 +434,37 @@ def main():
                 task_id += 1
                 save_tasks(tasks)
                 print("task added.")
-            last_interaction_time = time.time()
-            print_doodle()
 
         elif cmd == 'list':
             print("current tasks:")
-            for tid, t in tasks.items():
-                status = " [done]" if t['done'] else ""
-                print(f"  {tid}. {t['text']}{status}")
-            last_interaction_time = time.time()
-            print_doodle()
+            print_task_list(tasks)
+
+        elif cmd == 'delete' or cmd.startswith('delete '):
+            # Support both "delete" (interactive) and "delete 3" (inline)
+            parts = cmd.split(None, 1)
+            inline_num = parts[1] if len(parts) > 1 else None
+
+            if inline_num and inline_num.isdigit() and int(inline_num) in tasks:
+                tid = int(inline_num)
+                deleted_text = tasks[tid]['text']
+                del tasks[tid]
+                save_tasks(tasks)
+                print(f"task '{deleted_text}' is gone. like xenonite vapor.")
+            else:
+                if inline_num:
+                    print("rocky does not see that number. here is what we have:")
+                else:
+                    print("current tasks:")
+                print_task_list(tasks)
+                ans = input("which task to delete, question? enter number or 'none'. ").strip().lower()
+                if ans.isdigit() and int(ans) in tasks:
+                    tid = int(ans)
+                    deleted_text = tasks[tid]['text']
+                    del tasks[tid]
+                    save_tasks(tasks)
+                    print(f"task '{deleted_text}' is gone. like xenonite vapor.")
+                elif ans != 'none':
+                    print("rocky does not see that number. try again.")
 
         elif cmd.isdigit() and int(cmd) in tasks:
             tid = int(cmd)
@@ -432,12 +484,12 @@ def main():
                     print("math is math!")
             else:
                 print("task already done. try again.")
-            last_interaction_time = time.time()
-            print_doodle()
 
         else:
-            print("rocky does not understand. try 'break', 'add', 'list', 'done', 'quit', 'clear', or a task number.")
-            last_interaction_time = time.time()
+            print("rocky does not understand. try 'break', 'add', 'list', 'delete', 'done', 'quit', 'clear', or a task number.")
+
+        # Show doodle only every 5 commands
+        if command_count % 5 == 0:
             print_doodle()
 
 if __name__ == "__main__":
